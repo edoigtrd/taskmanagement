@@ -1,0 +1,41 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  backend-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Installer les dépendances backend
+        run: npm install
+
+      - name: Analyse de code (ESLint)
+        run: npm run lint
+
+      - name: Lancer les tests
+        run: npm test
+
+      - name: Couverture de code
+        run: npm run test:coverage
+
+      - name: Upload rapport de couverture
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-coverage-report
+          path: backend/coverage/
